@@ -1,4 +1,4 @@
-# Colocar aqui o endereço que tiver com os dados da Prova Brasil
+# Colocar aqui o endere�o que tiver com os dados da Prova Brasil
 setwd("C:\\Users\\Pedro\\Documents\\Prova Brasil 2017\\DADOS") 
 
 
@@ -21,13 +21,13 @@ library(scales)
 
 
 #LENDO AS BASES
-alunos5 <- read.csv("TS_ALUNO_5EF.csv", header = T, sep = ",") #BASE 5º ANO
-alunos9 <- read.csv("TS_ALUNO_9EF.csv", header = T, sep = ",") #BASE 9º ANO
-alunosEM <- read.csv("TS_ALUNO_3EM_ESC.csv", header = T, sep = ",") #BASE 3ª SÉRIE E.M.
+alunos5 <- read.csv("TS_ALUNO_5EF.csv", header = T, sep = ",") #BASE 5� ANO
+alunos9 <- read.csv("TS_ALUNO_9EF.csv", header = T, sep = ",") #BASE 9� ANO
+alunosEM <- read.csv("TS_ALUNO_3EM_ESC.csv", header = T, sep = ",") #BASE 3� SERIE E.M.
 #escolas <- read.csv("TS_ESCOLA.csv", header = T, sep = ",") 
 
 
-#SELECIONANDO ALGUMAS VARIÁVEIS
+#SELECIONANDO ALGUMAS VARIAVEIS
 alunos5 <- select(alunos5, c('ID_REGIAO','ID_UF','ID_MUNICIPIO','ID_ESCOLA','ID_DEPENDENCIA_ADM','ID_TURMA','ID_SERIE','ID_ALUNO','IN_PRESENCA_PROVA', 'PROFICIENCIA_LP', 'PROFICIENCIA_MT', 'PROFICIENCIA_LP_SAEB', 'PROFICIENCIA_MT_SAEB', 'ERRO_PADRAO_LP', 'ERRO_PADRAO_MT', 'ERRO_PADRAO_LP_SAEB', 'ERRO_PADRAO_MT_SAEB','ID_LOCALIZACAO'))
 alunos9 <- select(alunos9, c('ID_REGIAO','ID_UF','ID_MUNICIPIO','ID_ESCOLA','ID_DEPENDENCIA_ADM','ID_TURMA','ID_SERIE','ID_ALUNO','IN_PRESENCA_PROVA', 'PROFICIENCIA_LP', 'PROFICIENCIA_MT', 'PROFICIENCIA_LP_SAEB', 'PROFICIENCIA_MT_SAEB', 'ERRO_PADRAO_LP', 'ERRO_PADRAO_MT', 'ERRO_PADRAO_LP_SAEB', 'ERRO_PADRAO_MT_SAEB','ID_LOCALIZACAO'))
 alunosEM <- select(alunosEM, c('ID_REGIAO','ID_UF','ID_MUNICIPIO','ID_ESCOLA','ID_DEPENDENCIA_ADM','ID_TURMA','ID_SERIE','ID_ALUNO','IN_PRESENCA_PROVA', 'PROFICIENCIA_LP', 'PROFICIENCIA_MT', 'PROFICIENCIA_LP_SAEB', 'PROFICIENCIA_MT_SAEB', 'ERRO_PADRAO_LP', 'ERRO_PADRAO_MT', 'ERRO_PADRAO_LP_SAEB', 'ERRO_PADRAO_MT_SAEB','ID_LOCALIZACAO'))
@@ -35,7 +35,7 @@ alunosEM <- select(alunosEM, c('ID_REGIAO','ID_UF','ID_MUNICIPIO','ID_ESCOLA','I
 #JUNTANDO TODOS OS ALUNOS
 alunos <- rbind(alunos5, alunos9, alunosEM)
 
-#RENOMEANDO AS VARIÁVEIS
+#RENOMEANDO AS VARIAVEIS
 alunos <- alunos%>%
   rename(regiao = ID_REGIAO,
          UF = ID_UF,
@@ -48,16 +48,16 @@ alunos <- alunos%>%
          aluno_id = ID_ALUNO,
          presenca = IN_PRESENCA_PROVA)
 
-#SELECIONANDO APENAS OS QUE FIZERAM A PROVA E ALUNOS DA REDE PÚBLICA
+#SELECIONANDO APENAS OS QUE FIZERAM A PROVA E ALUNOS DA REDE PUBLICA
 alunos <- filter(alunos, presenca==1 & depadm!=4)
 
 #EXCLUINDO OS MISSINGS
 alunos <- na.omit(alunos)
 
 
-# CRIANDO A BASE DE ESCOLAS (TODAS AS SÉRIES JUNTAS)
-#Aqui, o gini é calculado para cada série já que os gráficos finais são separados pela série. 
-#Ou seja, uma escola que tem turmas de 5º e 9º ano terá quatro ginis: Língua Portuguesa e Matemática (5º ano) e Língua Portuguesa e Matemática (9º ano)
+# CRIANDO A BASE DE ESCOLAS (TODAS AS SERIES JUNTAS)
+#Aqui, o gini e calculado para cada serie j� que os Graficos finais s�o separados pela serie. 
+#Ou seja, uma escola que tem turmas de 5� e 9� ano ter� quatro ginis: Lingua Portuguesa e Matematica (5� ano) e Lingua Portuguesa e Matematica (9� ano)
 escolas_gini <- alunos%>%
   group_by(UF, municipio,depadm, escola, serie)%>%
   summarise('alunos'=n(), 'turmas'= n_distinct(turma),'gini_lp'= gini(PROFICIENCIA_LP_SAEB),'gini_mt'= gini(PROFICIENCIA_MT_SAEB), 'media proficiencia lp'=mean(PROFICIENCIA_LP_SAEB), 'nota maxima lp' = max(PROFICIENCIA_LP_SAEB), 'nota mininma lp' = min(PROFICIENCIA_LP_SAEB),'desvio padrao lp'= sd(PROFICIENCIA_LP_SAEB),'media proficiencia mt'=mean(PROFICIENCIA_MT_SAEB), 'nota maxima mt'=max(PROFICIENCIA_MT_SAEB), 'nota minima mt' = min(PROFICIENCIA_MT_SAEB),'desvio padrao mt'= sd(PROFICIENCIA_MT_SAEB))
@@ -81,13 +81,13 @@ escolas_gini<- select(escolas_gini, 1:turmas, 'alunos por turma', 'gini_adj_lp',
 
 
 
-# MONTANDO AS BASES DE ESCOLA SEPARADAS POR SÉRIE
+# MONTANDO AS BASES DE ESCOLA SEPARADAS POR SERIE
 escolas_gini5 <- filter(escolas_gini, serie==5)
 escolas_gini9 <- filter(escolas_gini, serie==9)
 escolas_giniEM <- filter(escolas_gini, serie>=12)
 
 
-# Apenas algumas visualizações
+# Apenas algumas visualiza�ões
 scatter.smooth(escolas_gini9$gini_lp, escolas_gini9$`media proficiencia lp`)
 scatter.smooth(escolas_gini9$gini_mt, escolas_gini9$`media proficiencia mt`)
 
@@ -95,7 +95,7 @@ scatter.smooth(escolas_gini9$gini_lp, escolas_gini9$`alunos por turma`)
 scatter.smooth(escolas_gini9$gini_mt, escolas_gini9$`alunos por turma`)
 
 
-# MONTANDO A BASE POR TURMA (TODAS AS SÉRIES)
+# MONTANDO A BASE POR TURMA (TODAS AS SERIES)
 turmas_gini <- alunos%>%
   group_by(UF, municipio, depadm,turma, serie, escola)%>%
   summarise('alunos'=n(),'gini_lp'= gini(PROFICIENCIA_LP_SAEB),'gini_mt'= gini(PROFICIENCIA_MT_SAEB), 'media proficiencia lp'=mean(PROFICIENCIA_LP_SAEB), 'nota maxima lp' = max(PROFICIENCIA_LP_SAEB), 'nota mininma lp' = min(PROFICIENCIA_LP_SAEB),'desvio padrao lp'= sd(PROFICIENCIA_LP_SAEB),'media proficiencia mt'=mean(PROFICIENCIA_MT_SAEB), 'nota maxima mt'=max(PROFICIENCIA_MT_SAEB), 'nota minima mt' = min(PROFICIENCIA_MT_SAEB),'desvio padrao mt'= sd(PROFICIENCIA_MT_SAEB))%>%
@@ -110,13 +110,13 @@ turmas_gini<- select(turmas_gini, 1:alunos, 'gini_adj_lp', 'gini_adj_mt',everyth
 # Exclui a tabela com os nomes das escolas
 rm(nome_escola)
 
-# MONTANDO A BASE POR TURMA (SEPARADA POR SÉRIE)
+# MONTANDO A BASE POR TURMA (SEPARADA POR SERIE)
 turmas_gini5 <- filter(turmas_gini, serie==5)
 turmas_gini9 <- filter(turmas_gini, serie==9)
 turmas_giniEM <- filter(turmas_gini, serie>=12)
 
 
-# Apenas algumas visualizações
+# Apenas algumas visualiza�ões
 scatter.smooth(turmas_gini9$gini_lp, turmas_gini9$`media proficiencia lp`)
 scatter.smooth(turmas_gini9$gini_mt, turmas_gini9$`media proficiencia mt`)
 
@@ -174,7 +174,7 @@ legend("topright", legend=c("Gini ajustado", "Gini"),
        col=c("blue", "red"), lty=1:2)
 
 
-############# GRÁFICOS DE NÚMERO DE ALUNOS X GINI (ESCOLA) ###############
+############# GRAFICOS DE NÚMERO DE ALUNOS X GINI (ESCOLA) ###############
 
 # Gini (eixo x) e alunos (eixo y)
 par(mfrow=c(2,2))
@@ -191,7 +191,7 @@ scatter.smooth( escolas_gini$`alunos por turma`,escolas_gini$gini_mt, xlim= rang
 scatter.smooth( escolas_gini$`alunos por turma`,escolas_gini$gini_adj_mt, xlim= range(0,120), ylim = range(0,0.6), col ="dark blue", xlab = "alunos por turma", ylab = "gini ajustado MT")
 
 
-########## GRÁFICOS DE NÚMERO DE ALUNOS X GINI (TURMA) ############
+########## GRAFICOS DE NÚMERO DE ALUNOS X GINI (TURMA) ############
 
 # Gini (eixo x) e alunos (eixo y)
 par(mfrow=c(2,2))
@@ -223,11 +223,11 @@ x<- alunos%>%
 tamanho_amostra <- c(1, 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,25,30,35,40,45)
 
 
-# Realizando o bootstrap com 100 repetições para cada tamanho de amostra especificado no vetor acima
+# Realizando o bootstrap com 100 repeti�ões para cada tamanho de amostra especificado no vetor acima
 set.seed(12345)
 gini_final <- rep(NA, 25) #criando vetor para alocar os ginis calculados para cada tamanho de amostra
 var_final <- rep(NA, 25)  #criando vetor para alocar as variâncias calculados para cada tamanho de amostra
-eqm <- rep(NA, 25)        #criando vetor para alocar os erros quadráticos médios calculados para cada tamanho de amostra
+eqm <- rep(NA, 25)        #criando vetor para alocar os erros quadráticos medios calculados para cada tamanho de amostra
 
 
 for(i in seq_along(tamanho_amostra)){
@@ -246,18 +246,18 @@ for(i in seq_along(tamanho_amostra)){
   
   gini_final[[i]]<- mean(bResults)
   var_final[[i]] <- bVar
-  eqm[[i]] <- var_final[i] + (0.08543285 - gini_final[i])^2 # calculando o erro quadrático médio para cada estimação
+  eqm[[i]] <- var_final[i] + (0.08543285 - gini_final[i])^2 # calculando o erro quadrático medio para cada estima�ão
   
 }
 
 var_final
 gini_final
 
-plot(tamanho_amostra, var_final) #fazendo o gráfico do tamanho da amostra x variâncias estimadas
-plot(tamanho_amostra, eqm) #fazendo o gráfico do tamanho da amostra x EQM
+plot(tamanho_amostra, var_final) #fazendo o Grafico do tamanho da amostra x variâncias estimadas
+plot(tamanho_amostra, eqm) #fazendo o Grafico do tamanho da amostra x EQM
 
 
-###### Mesma coisa que o bootstrap acima (com a mesma turma), só que usando o gini de matemática #############
+###### Mesma coisa que o bootstrap acima (com a mesma turma), só que usando o gini de Matematica #############
 
 y<- alunos%>%
   filter(turma==734294)%>%
@@ -302,9 +302,9 @@ plot(tamanho_amostra, eqm)
 
 
 
-################### GRÁFICOS POR ESCOLA #########################################
+################### GRAFICOS POR ESCOLA #########################################
 
-# Criando as bases por série para serem usadas na construção dos gráficos 
+# Criando as bases por serie para serem usadas na constru�ão dos Graficos 
 # Filtrando por turmas com pelo menos 10 alunos, da rede estadual (depadm==2) e por estado.
 # Para filtrar os outros estados, trocar o último número de cada linha, após o UF== :
 # PI: UF==22
@@ -320,10 +320,10 @@ base_3em <- filter(escolas_giniEM, `alunos por turma`>=10 & depadm ==2 & UF==32)
 
 
 
-################## GRÁFICOS 5o ANO ######################
+################## GRAFICOS 5o ANO ######################
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 5o ano)
-dist_a <- summary(base_5ef$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 5o ano)
+dist_a <- summary(base_5ef$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p<-base_5ef %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_a[2] & `media proficiencia lp`>=275 ~ "Q9",
                                gini_adj_lp>dist_a[2] & gini_adj_lp <=dist_a[5] & `media proficiencia lp`>=275 ~ "Q8",
@@ -336,17 +336,17 @@ p<-base_5ef %>%
                                gini_adj_lp>dist_a[5] & `media proficiencia lp`<200 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-a <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+a <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 5º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 5� ano EF)")+
   geom_vline(xintercept = dist_a[2])+
   geom_vline(xintercept = dist_a[5])+
   geom_hline(yintercept = 200)+
@@ -357,8 +357,8 @@ ggplotly(a, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 5o ano)
-dist_b <- summary(base_5ef$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 5o ano)
+dist_b <- summary(base_5ef$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_5ef %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_b[2] & `media proficiencia mt`>=275 ~ "Q9",
                                gini_adj_mt>dist_b[2] & gini_adj_mt <=dist_b[5] & `media proficiencia mt`>=275 ~ "Q8",
@@ -371,17 +371,17 @@ p <- base_5ef %>%
                                gini_adj_mt>dist_b[5] & `media proficiencia mt`<200 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-b <-  ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+b <-  ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 5º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 5� ano EF)")+
   geom_vline(xintercept = dist_b[2])+
   geom_vline(xintercept = dist_b[5])+
   geom_hline(yintercept = 200)+
@@ -391,11 +391,11 @@ b <-  ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadr
 ggplotly(b, tooltip = c("x", "y", "label"))
 
 
-############### GRÁFICOS 9o ANO ##################
+############### GRAFICOS 9o ANO ##################
 
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 9o ano)
-dist_c <- summary(base_9ef$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 9o ano)
+dist_c <- summary(base_9ef$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p <- base_9ef %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_c[2] & `media proficiencia lp`>=350 ~ "Q9",
                                gini_adj_lp>dist_c[2] & gini_adj_lp <=dist_c[5] & `media proficiencia lp`>=350 ~ "Q8",
@@ -408,17 +408,17 @@ p <- base_9ef %>%
                                gini_adj_lp>dist_c[5] & `media proficiencia lp`<275 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-c <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+c <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 9º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 9� ano EF)")+
   geom_vline(xintercept = dist_c[2])+
   geom_vline(xintercept = dist_c[5])+
   geom_hline(yintercept = 275)+
@@ -430,8 +430,8 @@ ggplotly(c, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 9o ano)
-dist_d <- summary(base_9ef$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 9o ano)
+dist_d <- summary(base_9ef$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_9ef %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_d[2] & `media proficiencia mt`>=350 ~ "Q9",
                                gini_adj_mt>dist_d[2] & gini_adj_mt <=dist_d[5] & `media proficiencia mt`>=350 ~ "Q8",
@@ -444,17 +444,17 @@ p <- base_9ef %>%
                                gini_adj_mt>dist_d[5] & `media proficiencia mt`<275 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-d <- ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+d <- ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 9º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 9� ano EF)")+
   geom_vline(xintercept = dist_d[2])+
   geom_vline(xintercept = dist_d[5])+
   geom_hline(yintercept = 275)+
@@ -465,10 +465,10 @@ ggplotly(d, tooltip = c("x", "y", "label"))
 
 
 
-############### GRÁFICOS 3ª SERIE E.M. ##################
+############### GRAFICOS 3� SERIE E.M. ##################
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 3ª série EM)
-dist_e <- summary(base_3em$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 3� serie EM)
+dist_e <- summary(base_3em$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p <- base_3em %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_e[2] & `media proficiencia lp`>=375 ~ "Q9",
                                gini_adj_lp>dist_e[2] & gini_adj_lp <=dist_e[5] & `media proficiencia lp`>=375 ~ "Q8",
@@ -481,17 +481,17 @@ p <- base_3em %>%
                                gini_adj_lp>dist_e[5] & `media proficiencia lp`<300 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-e <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+e <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 3ª série EM)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 3� serie EM)")+
   geom_vline(xintercept = dist_e[2])+
   geom_vline(xintercept = dist_e[5])+
   geom_hline(yintercept = 300)+
@@ -503,8 +503,8 @@ ggplotly(e, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 3ª série EM)
-dist_f <- summary(base_3em$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 3� serie EM)
+dist_f <- summary(base_3em$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_3em %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_f[2] & `media proficiencia mt`>=375 ~ "Q9",
                                gini_adj_mt>dist_f[2] & gini_adj_mt <=dist_f[5] & `media proficiencia mt`>=375 ~ "Q8",
@@ -517,17 +517,17 @@ p <- base_3em %>%
                                gini_adj_mt>dist_f[5] & `media proficiencia mt`<300 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-f <- ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+f <- ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 3ª série EM)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 3� serie EM)")+
   geom_vline(xintercept = dist_f[2])+
   geom_vline(xintercept = dist_f[5])+
   geom_hline(yintercept = 300)+
@@ -539,9 +539,9 @@ ggplotly(f, tooltip = c("x", "y", "label"))
 
 
 
-###################################### GRÁFICOS POR TURMA ##################################################
+###################################### GRAFICOS POR TURMA ##################################################
 
-# Criando as bases por série para serem usadas na construção dos gráficos 
+# Criando as bases por serie para serem usadas na constru�ão dos Graficos 
 # Filtrando por turmas com pelo menos 10 alunos, da rede estadual (depadm==2) e por estado.
 # Para filtrar os outros estados, trocar o último número de cada linha, após o UF== :
 # PI: UF==22
@@ -558,8 +558,8 @@ base_turma_3em <- filter(turmas_giniEM, alunos>=10 & depadm == 2 & UF==32)
 
 
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 5o ano)
-dist_g <- summary(base_turma_5ef$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 5o ano)
+dist_g <- summary(base_turma_5ef$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p<-base_turma_5ef %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_g[2] & `media proficiencia lp`>=275 ~ "Q9",
                                gini_adj_lp>dist_g[2] & gini_adj_lp <=dist_g[5] & `media proficiencia lp`>=275 ~ "Q8",
@@ -572,17 +572,17 @@ p<-base_turma_5ef %>%
                                gini_adj_lp>dist_g[5] & `media proficiencia lp`<200 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-g <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+g <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 5º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 5� ano EF)")+
   geom_vline(xintercept = dist_g[2])+
   geom_vline(xintercept = dist_g[5])+
   geom_hline(yintercept = 200)+
@@ -594,8 +594,8 @@ ggplotly(g, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 5o ano)
-dist_h <- summary(base_turma_5ef$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 5o ano)
+dist_h <- summary(base_turma_5ef$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_turma_5ef %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_h[2] & `media proficiencia mt`>=275 ~ "Q9",
                                gini_adj_mt>dist_h[2] & gini_adj_mt <=dist_h[5] & `media proficiencia mt`>=275 ~ "Q8",
@@ -608,17 +608,17 @@ p <- base_turma_5ef %>%
                                gini_adj_mt>dist_h[5] & `media proficiencia mt`<200 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-h <-  ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+h <-  ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 5º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 5� ano EF)")+
   geom_vline(xintercept = dist_h[2])+
   geom_vline(xintercept = dist_h[5])+
   geom_hline(yintercept = 200)+
@@ -628,10 +628,10 @@ h <-  ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadr
 ggplotly(h, tooltip = c("x", "y", "label"))
 
 
-############### GRÁFICOS 9o ANO ##################
+############### GRAFICOS 9o ANO ##################
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 9o ano)
-dist_i <- summary(base_turma_9ef$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 9o ano)
+dist_i <- summary(base_turma_9ef$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p <- base_turma_9ef %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_i[2] & `media proficiencia lp`>=350 ~ "Q9",
                                gini_adj_lp>dist_i[2] & gini_adj_lp <=dist_i[5] & `media proficiencia lp`>=350 ~ "Q8",
@@ -644,17 +644,17 @@ p <- base_turma_9ef %>%
                                gini_adj_lp>dist_i[5] & `media proficiencia lp`<275 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-i <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+i <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 9º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 9� ano EF)")+
   geom_vline(xintercept = dist_i[2])+
   geom_vline(xintercept = dist_i[5])+
   geom_hline(yintercept = 275)+
@@ -665,8 +665,8 @@ ggplotly(i, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 9o ano)
-dist_j <- summary(base_turma_9ef$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 9o ano)
+dist_j <- summary(base_turma_9ef$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_turma_9ef %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_j[2] & `media proficiencia mt`>=350 ~ "Q9",
                                gini_adj_mt>dist_j[2] & gini_adj_mt <=dist_j[5] & `media proficiencia mt`>=350 ~ "Q8",
@@ -679,17 +679,17 @@ p <- base_turma_9ef %>%
                                gini_adj_mt>dist_j[5] & `media proficiencia mt`<275 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-j <- ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+j <- ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 9º ano EF)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 9� ano EF)")+
   geom_vline(xintercept = dist_j[2])+
   geom_vline(xintercept = dist_j[5])+
   geom_hline(yintercept = 275)+
@@ -700,10 +700,10 @@ ggplotly(j, tooltip = c("x", "y", "label"))
 
 
 
-############### GRÁFICOS 3ª SERIE E.M. ##################
+############### GRAFICOS 3� SERIE E.M. ##################
 
-#Gráfico de desigualdade x proficiência (Língua Portuguesa 3ª série EM)
-dist_k <- summary(base_turma_3em$gini_adj_lp) #olhando os quartis da distribuição do gini ajustado de língua portuguesa
+#Grafico de desigualdade x Proficiencia (Lingua Portuguesa 3� serie EM)
+dist_k <- summary(base_turma_3em$gini_adj_lp) #olhando os quartis da distribui�ao do gini ajustado de lingua portuguesa
 p <- base_turma_3em %>%
   mutate(quadrant =  case_when(gini_adj_lp<=dist_k[2] & `media proficiencia lp`>=375 ~ "Q9",
                                gini_adj_lp>dist_k[2] & gini_adj_lp <=dist_k[5] & `media proficiencia lp`>=375 ~ "Q8",
@@ -716,17 +716,17 @@ p <- base_turma_3em %>%
                                gini_adj_lp>dist_k[5] & `media proficiencia lp`<300 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-k <- ggplot(p, aes(`Desigualdade LP` , `Proficiência média LP`, color = quadrant, label = Escola))+
+k <- ggplot(p, aes(`Desigualdade LP` , `Proficiencia media LP`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Língua Portuguesa 3ª série EM)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Lingua Portuguesa 3� serie EM)")+
   geom_vline(xintercept = dist_k[2])+
   geom_vline(xintercept = dist_k[5])+
   geom_hline(yintercept = 300)+
@@ -737,8 +737,8 @@ ggplotly(k, tooltip = c("x", "y", "label"))
 
 
 
-#Gráfico de desigualdade x proficiência (Matemática 3ª série EM)
-dist_l <- summary(base_turma_3em$gini_adj_mt) #olhando os quartis da distribuição do gini ajustado de matemática
+#Grafico de desigualdade x Proficiencia (Matematica 3� serie EM)
+dist_l <- summary(base_turma_3em$gini_adj_mt) #olhando os quartis da distribui�ao do gini ajustado de Matematica
 p <- base_turma_3em %>%
   mutate(quadrant =  case_when(gini_adj_mt<=dist_l[2] & `media proficiencia mt`>=375 ~ "Q9",
                                gini_adj_mt>dist_l[2] & gini_adj_mt <=dist_l[5] & `media proficiencia mt`>=375 ~ "Q8",
@@ -751,17 +751,17 @@ p <- base_turma_3em %>%
                                gini_adj_mt>dist_l[5] & `media proficiencia mt`<300 ~ "Q1"),
          'Desigualdade LP' = round(gini_adj_lp, 3),
          'Desigualdade MT' = round(gini_adj_mt, 3),
-         'Proficiência média LP' = round(`media proficiencia lp`, 1),
-         'Proficiência média MT' = round(`media proficiencia mt`, 1),
+         'Proficiencia media LP' = round(`media proficiencia lp`, 1),
+         'Proficiencia media MT' = round(`media proficiencia mt`, 1),
          'Escola' = nome_escola)
 
-l <- ggplot(p, aes(`Desigualdade MT` , `Proficiência média MT`, color = quadrant, label = Escola))+
+l <- ggplot(p, aes(`Desigualdade MT` , `Proficiencia media MT`, color = quadrant, label = Escola))+
   geom_point(alpha = 0.9)+
   theme_minimal()+
   theme(plot.title=element_text(hjust = 0.5, face="bold"), legend.position = "none")+
-  ylab('Proficiência')+
+  ylab('Proficiencia')+
   xlab('Gini')+
-  labs(title = "Gráfico de desigualdade x proficiência (Matemática 3ª série EM)")+
+  labs(title = "Grafico de desigualdade x Proficiencia (Matematica 3� serie EM)")+
   geom_vline(xintercept = dist_l[2])+
   geom_vline(xintercept = dist_l[5])+
   geom_hline(yintercept = 300)+
